@@ -1,6 +1,6 @@
 # go-wishlist
 
-(Yet to become) Wishlist web app with Golang, part of my [#100DaysOfCode](https://github.com/sebkraemer/100-days-of-code)
+(Yet to become) Wishlist web app with Golang, part of my [#100DaysOfCode](https://github.com/sebkraemer/100-days-of-code/blob/master/log.md#day-64)
 
 # Misc. notes for setup and running
 
