@@ -2,12 +2,74 @@
 
 (Yet to become) Wishlist web app with Golang, part of my [#100DaysOfCode](https://github.com/sebkraemer/100-days-of-code/blob/master/log.md#day-64)
 
-# Misc. notes for setup and running
+# Documentation
+
+## Misc. notes for setup and running
 
 `brew install --cash mongodb-compass` for conveniently inspecting the DB
 
 Start mongodb service:
 `docker-compose -f ./docker/docker-compose.yml up`
+
+## API
+
+This is a draft for the API.
+
+
+### REST resource
+
+```
+{
+    "id": 1,
+    "description": "Writing Without Bullshit book",
+}
+```
+
+Internally, the resource will have an owner and date information from when the wish was first created.
+
+```
+{
+    "id": 1,
+    "owner": "seb",
+    "description": "Writing Without Bullshit book",
+}
+```
+
+### REST routes
+
+```
+{
+  "GET /api/wishes": {
+    "desc": "returns all wishes",
+    "response": "200 application/json",
+    "data": [{}, {}, {}]
+  },
+
+  "GET /api/wishes/:id": {
+    "desc": "returns a wish respresented by its id",
+    "response": "200 application/json",
+    "data": {}
+  },
+
+  "POST /api/wishes": {
+    "desc": "create and returns a new wish using the posted object",
+    "response": "201 application/json",
+    "data": {}
+  },
+
+  "PUT /api/wishes/:id": {
+    "desc": "updates and returns a wish with the posted update object",
+    "response": "200 application/json",
+    "data": {}
+  },
+
+  "DELETE /api/wishes/:id": {
+    "desc": "deletes and returns the matching wish",
+    "response": "200 application/json",
+    "data": {}
+  }
+}
+```
 
 # Ideas, TODOs
 
@@ -26,6 +88,9 @@ Start mongodb service:
 -[] deployment, where and how
 -[] insert layer to support other nosql dbs, e.g. dynamodb
   (see also link section for aws example)
+- wishes
+  - add priority
+  - add wishlist sharing
 
 # Links and resources
 

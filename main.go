@@ -10,10 +10,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type WishlistItem struct {
-	Owner string    `json:"owner" bson:"owner"`
-	Desc  string    `json:"desc"  bson:"desc"`
-	Date  time.Time `json:"date"  bson:"date"`
+// wishlistItem internal resource
+type wishlistItem struct {
+	// what about _id handling?
+	// ID          primitive.ObjectID `bson:"_id, omitempty"` // will create 000000 ids if not set
+	Owner       string    `bson:"owner"`
+	Description string    `bson:"desc"`
+	Date        time.Time `bson:"date"`
+}
+
+// Wish Resource type for REST API
+type Wish struct {
+	Description string `json:"desc"  bson:"desc"`
 }
 
 func main() {
@@ -31,8 +39,7 @@ func main() {
 	}
 	defer client.Disconnect(ctx)
 
-	testItem := WishlistItem{"seb", "test wish", time.Now()}
-
+	testItem := wishlistItem{Owner: "seb", Description: "test wish", Date: time.Now()}
 	res, err := collection.InsertOne(context.Background(), testItem)
 	if err != nil {
 		log.Fatal(err)
