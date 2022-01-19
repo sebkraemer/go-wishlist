@@ -1,14 +1,12 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"log"
+	"net/http"
 	"time"
-
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+const portNumber = ":8080"
 
 // wishlistItem internal resource
 type wishlistItem struct {
@@ -26,23 +24,31 @@ type Wish struct {
 
 func main() {
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://172.16.44.133:27017"))
-	if err != nil {
-		log.Fatal(err)
-	}
+	http.HandleFunc("/", Home)
+	http.HandleFunc("/about", About)
 
-	collection := client.Database("wishlist").Collection("wishes")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer client.Disconnect(ctx)
+	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
+	_ = http.ListenAndServe(portNumber, nil)
+	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// defer cancel()
+	// client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://172.16.44.133:27017"))
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// var a = 010
+	// pa := &a
+	// log.Fatal(*pa)
 
-	testItem := wishlistItem{Owner: "seb", Description: "test wish", Date: time.Now()}
-	res, err := collection.InsertOne(context.Background(), testItem)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Inserted %v with id %v\n", testItem, res.InsertedID)
+	// collection := client.Database("wishlist").Collection("wishes")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer client.Disconnect(ctx)
+
+	// testItem := wishlistItem{Owner: "seb", Description: "test wish", Date: time.Now()}
+	// res, err := collection.InsertOne(context.Background(), testItem)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Printf("Inserted %v with id %v\n", testItem, res.InsertedID)
 }
