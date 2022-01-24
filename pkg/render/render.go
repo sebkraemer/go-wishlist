@@ -3,31 +3,50 @@ package render
 import (
 	"bytes"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
-	"text/template"
+
+	"github.com/sebkraemer/go-wishlist/pkg/config"
+	"github.com/sebkraemer/go-wishlist/pkg/models"
 )
 
+// functions for later use in template parsing
 var functions = template.FuncMap{}
 
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
+var app *config.AppConfig
 
-	tc, err := CreateTemplateCache()
-	if err != nil {
-		log.Fatal("create cache failed ", err)
+// NewTemplate sets the config for the render package
+func NewTemplates(a *config.AppConfig) {
+	app = a
+}
+
+// AddDefaultData adds data that shall be available to all pages
+func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+	return td
+}
+
+func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
+	var tc map[string]*template.Template
+
+	if app.UseCache {
+		tc = app.TemplateCache
+	} else {
+		tc, _ = CreateTemplateCache()
 	}
 
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal("not found in map ", tmpl, err)
+		log.Fatal("template not found in cache ", tmpl)
 	}
 
-	buf := new(bytes.Buffer)
+	buf := new(bytes.Buffer) // use a buffer to catch execute error early (extra step)
 
-	_ = t.Execute(buf, nil)
+	td = AddDefaultData(td)
+	_ = t.Execute(buf, td)
 
-	_, err = buf.WriteTo(w)
+	_, err := buf.WriteTo(w)
 	if err != nil {
 		fmt.Println("error writing template to browser", err)
 	}

@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
+	"github.com/sebkraemer/go-wishlist/pkg/config"
 	"github.com/sebkraemer/go-wishlist/pkg/handlers"
+	"github.com/sebkraemer/go-wishlist/pkg/render"
 )
 
 const portNumber = ":8080"
@@ -25,11 +28,24 @@ type Wish struct {
 }
 
 func main() {
+	var app config.AppConfig
+	tc, err := render.CreateTemplateCache()
+	if err != nil {
+		log.Fatal("cannot create template cache", err)
+	}
+	app.TemplateCache = tc
+	app.UseCache = false
 
-	http.HandleFunc("/", handlers.Home)
-	http.HandleFunc("/about", handlers.About)
+	// apply repository pattern to set config
+	repo := handlers.NewRepo(&app)
+	handlers.NewHandlers(repo)
 
-	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
+	render.NewTemplates(&app)
+
+	http.HandleFunc("/", handlers.Repo.Home)
+	http.HandleFunc("/about", handlers.Repo.About)
+
+	fmt.Printf("Starting application on port %s\n", portNumber)
 	_ = http.ListenAndServe(portNumber, nil)
 	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	// defer cancel()
