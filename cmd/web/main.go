@@ -42,31 +42,10 @@ func main() {
 
 	render.NewTemplates(&app)
 
-	http.HandleFunc("/", handlers.Repo.Home)
-	http.HandleFunc("/about", handlers.Repo.About)
-
+	srv := http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
 	fmt.Printf("Starting application on port %s\n", portNumber)
-	_ = http.ListenAndServe(portNumber, nil)
-	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	// defer cancel()
-	// client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://172.16.44.133:27017"))
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// var a = 010
-	// pa := &a
-	// log.Fatal(*pa)
-
-	// collection := client.Database("wishlist").Collection("wishes")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer client.Disconnect(ctx)
-
-	// testItem := wishlistItem{Owner: "seb", Description: "test wish", Date: time.Now()}
-	// res, err := collection.InsertOne(context.Background(), testItem)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Printf("Inserted %v with id %v\n", testItem, res.InsertedID)
+	log.Fatal(srv.ListenAndServe())
 }
