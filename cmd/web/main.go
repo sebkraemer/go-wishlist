@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/alexedwards/scs/v2"
 	"github.com/sebkraemer/go-wishlist/pkg/config"
 	"github.com/sebkraemer/go-wishlist/pkg/handlers"
 	"github.com/sebkraemer/go-wishlist/pkg/render"
@@ -13,22 +14,20 @@ import (
 
 const portNumber = ":8080"
 
-// wishlistItem internal resource
-type wishlistItem struct {
-	// what about _id handling?
-	// ID          primitive.ObjectID `bson:"_id, omitempty"` // will create 000000 ids if not set
-	Owner       string    `bson:"owner"`
-	Description string    `bson:"desc"`
-	Date        time.Time `bson:"date"`
-}
-
-// Wish Resource type for REST API
-type Wish struct {
-	Description string `json:"desc"  bson:"desc"`
-}
-
 func main() {
 	var app config.AppConfig
+
+	// todo change when in production/ make runtime configurable
+	app.InProduction = false
+
+	session := scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = app.InProduction // should be true in production for tls
+
+	app.Session = session
+
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache", err)

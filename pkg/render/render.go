@@ -15,6 +15,7 @@ import (
 // functions for later use in template parsing
 var functions = template.FuncMap{}
 
+// app config for use in render package; maybe I will kill it if only UseCache is needed in the end
 var app *config.AppConfig
 
 // NewTemplate sets the config for the render package

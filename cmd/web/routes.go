@@ -14,6 +14,8 @@ func routes(app *config.AppConfig) http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
+	// todo nosurf csrf, middleware.go
+	mux.Use(handlers.SessionLoadAndSave)
 
 	mux.Get("/", handlers.Repo.Home)
 	mux.Get("/about", handlers.Repo.About)
